@@ -1,0 +1,12 @@
+- binary: "ls"
+  args:
+  - "-lrtha"
+  - "/"
+- binary: "lscpu"
+- binary: "nvme"
+  args:
+  - "list"
+  - "-o json"
+- binary: "cat"
+  args:
+  - "/proc/meminfo"

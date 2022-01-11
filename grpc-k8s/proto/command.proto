@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package command;
+
+option go_package = "go/command";
+
+message ShellCommandsOutputRequest {
+        repeated CommandRequest requests = 1;
+}
+
+message CommandRequest {
+        string binary = 1;
+        repeated string args = 2;
+        bool continueOnError = 3;
+}
+
+message ShellCommandsOutputResponse {
+        repeated CommandResponse responses = 1;
+}
+
+message CommandResponse {
+        bytes output = 1;
+}
+
+service RunRPCCommands {
+        rpc RunShellCommands(ShellCommandsOutputRequest) returns (ShellCommandsOutputResponse) {};
+}
+

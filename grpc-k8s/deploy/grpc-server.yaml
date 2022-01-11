@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: grpc-server
+  namespace: default
+  labels:
+    k8s-app: grpc-server
+spec:
+  selector:
+    matchLabels:
+      name: grpc-server
+  template:
+    metadata:
+      labels:
+        name: grpc-server
+    spec:
+      hostNetwork: true
+      containers:
+      - name: server
+        image: mittachaitu/test-grpc-server:ci
+        imagePullPolicy: IfNotPresent
+          #        resources:
+          #          limits:
+          #            memory: 200Mi
+          #          requests:
+          #            cpu: 100m
+          #            memory: 200Mi
+        env:
+        - name: "RootDirectory"
+          value: "/root"
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: rootdir
+          mountPath: /root
+          readOnly: true
+      volumes:
+      - name: rootdir
+        hostPath:
+          path: /

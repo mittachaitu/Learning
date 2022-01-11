@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: grpc-client
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      # VERIFY the value of serviceAccountName is pointing to service account
+      # created within openebs namespace. Use the non-default account.
+      # by running `kubectl get sa -n <openebs-namespace>`
+      # serviceAccountName: openebs-cstor-operator
+      containers:
+      - name:  grpc-client
+        args:
+        - "--address=192.168.0.4"
+        - "--port=35220"
+        - "--cmdpath=/commands/cmd-config"
+        tty: true
+        image: mittachaitu/test-grpc-client:ci
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: commands-config
+          mountPath: /commands
+      restartPolicy: OnFailure
+      volumes:
+      - name: commands-config
+        configMap:
+          name: grpc-client-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grpc-client-config
+data:
+  cmd-config: |
+    - binary: "ls"
+      args:
+      - "-lrtha"
+      - "/"
+    - binary: "lscpu"
+    - binary: "nvme"
+      args:
+      - "list"
+      - "-o json"
+    - binary: "cat"
+      args:
+      - "/proc/meminfo"
+    - binary: "netstat"
+      args:
+      - "-nltpa"
